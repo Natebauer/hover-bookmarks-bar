@@ -2,6 +2,8 @@
 // Owns all chrome.bookmarks / chrome.tabs calls so the content script stays tiny,
 // and tells open tabs when bookmarks change so every bar stays in sync.
 
+importScripts("settings.js");
+
 // ---- Locating the bookmarks bar and "Other bookmarks" folders -------------
 
 function findRoots(tree) {
@@ -25,9 +27,30 @@ function slim(node) {
   return out;
 }
 
+function findNode(nodes, id) {
+  for (const n of nodes) {
+    if (n.id === id) return n;
+    if (n.children) {
+      const hit = findNode(n.children, id);
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
+// The bar shows the browser's bookmarks bar unless the user picked another
+// folder on the options page (needed for Vivaldi, whose bar folder isn't the
+// one Chromium labels "bookmarks bar").
 async function getBarTree() {
   const tree = await chrome.bookmarks.getTree();
-  const { bar, other } = findRoots(tree);
+  let { bar, other } = findRoots(tree);
+  const chosenId = await HBBSettings.get("barFolderId").catch(() => null);
+  const chosen = chosenId ? findNode(tree, chosenId) : null;
+  if (chosen && chosen.children) {
+    // Hide "Other bookmarks" if the chosen folder is it or lives inside it.
+    if (other && (chosen === other || findNode(other.children, chosen.id))) other = null;
+    bar = chosen;
+  }
   return {
     bar: bar ? slim(bar) : null,
     other: other && other.children && other.children.length ? slim(other) : null,
@@ -38,20 +61,35 @@ async function getBarTree() {
 
 // Open a background tab next to the sender, after any tabs it already opened,
 // so several middle-clicks in a row keep their order (like Chrome does).
+// Some browsers (Vivaldi) don't record openerTabId, so also remember which
+// tabs we opened from each tab.
+const openedFrom = new Map(); // sender tab id -> Set of tab ids opened from it
+
 async function openBackgroundTab(url, senderTab, active) {
   if (!senderTab) return chrome.tabs.create({ url, active });
+  const ours = openedFrom.get(senderTab.id) || new Set();
   const tabs = await chrome.tabs.query({ windowId: senderTab.windowId });
   tabs.sort((a, b) => a.index - b.index);
   let index = senderTab.index + 1;
-  while (index < tabs.length && tabs[index].openerTabId === senderTab.id) index++;
-  return chrome.tabs.create({
+  while (index < tabs.length && (tabs[index].openerTabId === senderTab.id || ours.has(tabs[index].id))) index++;
+  const tab = await chrome.tabs.create({
     url,
     active,
     index,
     windowId: senderTab.windowId,
     openerTabId: senderTab.id,
   });
+  ours.add(tab.id);
+  openedFrom.set(senderTab.id, ours);
+  // Vivaldi applies its own new-tab placement and ignores `index`; put it back.
+  if (tab.index !== index) await chrome.tabs.move(tab.id, { index }).catch(() => {});
+  return tab;
 }
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+  openedFrom.delete(tabId);
+  for (const set of openedFrom.values()) set.delete(tabId);
+});
 
 async function openUrl(url, disposition, senderTab) {
   switch (disposition) {
@@ -130,6 +168,10 @@ const handlers = {
       }
     }
     return best === null ? null : [(best >> 16) & 255, (best >> 8) & 255, best & 255, 1];
+  },
+  async settingsChanged() {
+    notifyTabs();
+    return true;
   },
   async getZoom(_msg, sender) {
     return sender.tab ? chrome.tabs.getZoom(sender.tab.id) : 1;

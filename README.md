@@ -42,6 +42,29 @@ while the bar is showing.
 Page zoom doesn't affect the bar: it's counter-scaled to the tab's zoom level (and rescales live if you
 zoom while it's open), so it stays the same size as the rest of the browser's UI.
 
+## Choosing the folder (Vivaldi)
+
+By default the bar shows the browser's bookmarks bar folder. To show a different folder, open the
+extension's **Options** (extensions page → Hover Bookmarks Bar → Details → Extension options) and pick
+one. Open tabs switch immediately.
+
+Vivaldi needs this: the folder Chromium calls the "bookmarks bar" is Vivaldi's root of all bookmarks
+(including Speed Dial folders), and Vivaldi doesn't tell extensions which folder its own bookmark bar
+uses. Pick that folder in Options.
+
+## Tested browsers
+
+Automated end-to-end tests (revealing/hiding, folders, middle-click, overflow, editing, drag and drop,
+sync, fullscreen, page-color matching, page zoom, folder picker) pass in:
+
+- Dia 1.2 (Chromium 155)
+- Google Chrome 155
+- Microsoft Edge 155
+- Brave 1.97 (Chromium 155)
+- Vivaldi 8.2 (with the bar folder chosen in Options; deleting a bookmark moves it to Vivaldi's Trash)
+
+Any Chromium browser that supports Manifest V3 extensions (Chromium 116+) should work.
+
 ## Where it can't appear
 
 Browsers don't let extensions run on their own pages: Dia's new-tab page, `dia://` / `chrome://`
@@ -59,6 +82,8 @@ page load, and bookmarks are only fetched when the bar first opens.
   browser's local cache), and access to all sites so the bar can appear on any page and match its color.
 - `background.js` — talks to the bookmarks and tabs APIs, keeps every tab's bar in sync.
 - `content.js` — the bar itself, inside a closed shadow root so sites can't restyle it.
+- `options.html`, `options.js` — the folder picker. `settings.js` stores the choice in the extension's
+  own IndexedDB (no extra permission needed).
 - `PRIVACY.md`, `STORE_LISTING.md` — ready for a Chrome Web Store submission.
 
 ## License

@@ -22,6 +22,7 @@ then slides it down over the page. Move away and it tucks itself back up.
 • Bookmark the current page with one click; edit, rename, delete, and create folders by right-clicking
 • Drag to reorder, drop into folders, or drag a link from the page to bookmark it
 • Takes on the color of the page you're on, so your browser's toolbar tint doesn't change
+• Choose which bookmark folder it shows (handy in Vivaldi)
 • Stays out of the way in fullscreen video
 • Lightweight: nothing is added to a page until you hover, and it never slows page loading
 • No data collection, no network requests
