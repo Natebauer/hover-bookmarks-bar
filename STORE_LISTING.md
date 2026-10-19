@@ -31,9 +31,22 @@ Made for browsers like Dia that don't offer an auto-hiding bookmarks bar.
 
 ## Assets needed
 
-- Icon: `icons/icon128.png` (included)
-- Screenshots: at least one 1280×800 or 640×400 PNG/JPEG — capture the bar open with a folder dropdown.
-- Optional small promo tile: 440×280.
+All in `store/` (made with sample bookmarks and demo pages; nothing personal):
+
+| Dashboard field | File |
+| --- | --- |
+| Store icon (128×128) | `icons/icon128.png` |
+| Screenshot 1 (1280×800) | `store/screenshot-1.png` — bar revealed on a light page |
+| Screenshot 2 | `store/screenshot-2.png` — folder with nested submenu |
+| Screenshot 3 | `store/screenshot-3.png` — bar matching a dark page |
+| Screenshot 4 | `store/screenshot-4.png` — right-click menu |
+| Small promo tile (440×280) | `store/promo-small-440x280.png` |
+
+Upload the screenshots in that order; the first one is the main image on the listing.
+
+**Homepage URL:** https://github.com/Natebauer/hover-bookmarks-bar
+**Support URL:** https://github.com/Natebauer/hover-bookmarks-bar/issues
+**Language:** English
 
 ## Privacy practices tab
 
