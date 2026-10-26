@@ -16,6 +16,9 @@ Keep your screen clean without giving up your bookmarks bar.
 Hover Bookmarks Bar hides your bookmarks bar until you rest the mouse at the top edge of the page,
 then slides it down over the page. Move away and it tucks itself back up.
 
+⚠️ Heads up: try it on any other website. Chrome blocks extensions on the Web Store and New Tab pages,
+and tabs that were already open need a reload.
+
 • Uses your browser's real bookmarks bar — no separate list, changes sync both ways instantly
 • Folders, nested folders, and a » menu for bookmarks that don't fit
 • Middle-click or Ctrl+click several bookmarks in a folder without it closing
