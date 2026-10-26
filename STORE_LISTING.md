@@ -43,6 +43,7 @@ All in `store/` (made with sample bookmarks and demo pages; nothing personal):
 | Screenshot 2 | `store/screenshot-2.png` — folder with nested submenu |
 | Screenshot 3 | `store/screenshot-3.png` — bar matching a dark page |
 | Screenshot 4 | `store/screenshot-4.png` — right-click menu |
+| Screenshot 5 | `store/screenshot-5.png` — welcome page and toolbar menu (1.0.1) |
 | Small promo tile (440×280) | `store/promo-small-440x280.png` |
 
 Upload the screenshots in that order; the first one is the main image on the listing.
