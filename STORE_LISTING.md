@@ -16,8 +16,7 @@ Keep your screen clean without giving up your bookmarks bar.
 Hover Bookmarks Bar hides your bookmarks bar until you rest the mouse at the top edge of the page,
 then slides it down over the page. Move away and it tucks itself back up.
 
-⚠️ Heads up: try it on any other website. Chrome blocks extensions on the Web Store and New Tab pages,
-and tabs that were already open need a reload.
+⚠️ Heads up: try it on any other website. Chrome blocks extensions on the Web Store and New Tab pages.
 
 • Uses your browser's real bookmarks bar — no separate list, changes sync both ways instantly
 • Folders, nested folders, and a » menu for bookmarks that don't fit
@@ -26,6 +25,7 @@ and tabs that were already open need a reload.
 • Drag to reorder, drop into folders, or drag a link from the page to bookmark it
 • Takes on the color of the page you're on, so your browser's toolbar tint doesn't change
 • Choose which bookmark folder it shows (handy in Vivaldi)
+• Works right away in the tabs you already have open, no reload needed
 • Stays out of the way in fullscreen video
 • Lightweight: nothing is added to a page until you hover, and it never slows page loading
 • No data collection, no network requests
@@ -61,6 +61,9 @@ Shows the browser's bookmarks bar as an overlay that appears when the mouse hove
 - `bookmarks` — Required to display the user's bookmarks bar folder and to apply the edits the user
   makes in the bar (add, rename, move, delete).
 - `favicon` — Shows each bookmark's site icon from the browser's local favicon cache.
+- `scripting` — Used only when the extension is installed or updated, to add the bar to tabs that were
+  already open, so users don't have to reload them. It runs the extension's own packaged script and
+  nothing else. (Adds no new install warning: the extension already has access to all sites.)
 - Host access (`<all_urls>`) — The bar is drawn inside the current web page, so the script must be
   able to run on any site the user visits. It only reads the page's URL and title when the user clicks
   "bookmark this page". Host access is also what allows `tabs.captureVisibleTab`, used to read the

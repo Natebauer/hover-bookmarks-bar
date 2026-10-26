@@ -12,9 +12,12 @@ change here shows up in the bookmark manager, and vice versa, in every open tab.
 2. Turn on **Developer mode**.
 3. Click **Load unpacked** and pick this `hover-bookmarks-bar` folder.
 4. Turn off Dia's own bookmarks bar if it's showing (Ctrl+Shift+B in most Chromium browsers).
-5. Reload tabs that were already open — the extension only runs in pages loaded after install.
 
-After editing any file here, click the reload icon on the extension's card, then reload your tabs.
+A welcome page opens on first install. The bar is added to tabs that were already open, so nothing
+needs reloading — including after you edit a file here and click the reload icon on the extension's card.
+
+The toolbar button opens a small menu: **How to use** (the welcome page), **Choose folder…** (Options)
+and **Help & support**.
 
 ## How it works
 
@@ -79,9 +82,13 @@ page load, and bookmarks are only fetched when the bar first opens.
 ## Files
 
 - `manifest.json` — permissions: `bookmarks` (read/edit your bookmarks), `favicon` (site icons from the
-  browser's local cache), and access to all sites so the bar can appear on any page and match its color.
+  browser's local cache), `scripting` (add the bar to already-open tabs on install/update), and access
+  to all sites so the bar can appear on any page and match its color.
 - `background.js` — talks to the bookmarks and tabs APIs, keeps every tab's bar in sync.
 - `content.js` — the bar itself, inside a closed shadow root so sites can't restyle it.
+- `welcome.html`, `welcome.js` — the first-run page (it loads `content.js` itself, since extension pages
+  don't get content scripts).
+- `popup.html`, `popup.js` — the toolbar button's menu.
 - `options.html`, `options.js` — the folder picker. `settings.js` stores the choice in the extension's
   own IndexedDB (no extra permission needed).
 - `PRIVACY.md`, `STORE_LISTING.md` — ready for a Chrome Web Store submission.

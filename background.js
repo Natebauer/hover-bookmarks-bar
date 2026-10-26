@@ -207,6 +207,32 @@ function notifyTabs() {
   }, 50);
 }
 
+// ---- Install and update ----------------------------------------------------
+
+// Content scripts only load into pages opened after an install or update, so
+// add the bar to every tab that's already open; nobody has to reload anything.
+// Pages extensions can't touch (chrome://, the Web Store) just fail quietly.
+async function addToOpenTabs() {
+  const tabs = await chrome.tabs.query({});
+  await Promise.all(
+    tabs
+      .filter((t) => !t.discarded && /^(https?|file):/.test(t.url || ""))
+      .map((t) =>
+        chrome.scripting
+          .executeScript({ target: { tabId: t.id }, files: ["content.js"] })
+          .catch(() => {})
+      )
+  );
+}
+
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason !== "install" && reason !== "update") return;
+  addToOpenTabs();
+  // First install only: a page where the bar works right away, instead of the
+  // store page people install from (where browsers block all extensions).
+  if (reason === "install") chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
+});
+
 // The bar counter-scales against page zoom so it stays browser-sized.
 chrome.tabs.onZoomChange.addListener(({ tabId, newZoomFactor }) => {
   chrome.tabs.sendMessage(tabId, { type: "zoomChanged", zoom: newZoomFactor }).catch(() => {});

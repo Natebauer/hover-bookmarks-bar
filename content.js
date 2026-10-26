@@ -4,8 +4,15 @@
 // restyle them).
 
 (() => {
-  if (window.top !== window || window.__hoverBookmarksBarLoaded) return;
-  window.__hoverBookmarksBarLoaded = true;
+  if (window.top !== window) return;
+
+  // This script can run twice in a page: from the manifest, and again when the
+  // extension is installed or updated and adds itself to tabs that were already
+  // open. The newest copy wins: it tells any older copy (which may belong to a
+  // previous version that can no longer reach the extension) to remove itself.
+  const TAKEOVER = "hover-bookmarks-bar:takeover";
+  document.dispatchEvent(new CustomEvent(TAKEOVER));
+  document.addEventListener(TAKEOVER, teardown);
 
   const HOVER_ZONE = 4; // px at the top of the page that trigger the bar
   const REVEAL_DELAY = 150; // ms the mouse must rest in the zone
@@ -347,10 +354,17 @@
   // of the visible tab); fall back to reading the page's CSS.
   let colorPromise = null;
   let colorAt = 0;
+  // A page that has only just loaded may not have painted its colors yet, so
+  // the snapshot waits until it's at least PAINT_SETTLE ms old.
+  const PAINT_SETTLE = 1200;
+
   function sampleColorSoon() {
     if (colorPromise && Date.now() - colorAt < 1000) return;
     colorAt = Date.now();
-    colorPromise = send("sampleTopColor").catch(() => null);
+    const wait = Math.max(0, PAINT_SETTLE - performance.now());
+    colorPromise = new Promise((r) => setTimeout(r, wait))
+      .then(() => send("sampleTopColor"))
+      .catch(() => null);
   }
 
   function matchPageColor(sampled) {
@@ -571,6 +585,7 @@
 
   function teardown() {
     dead = true;
+    document.removeEventListener(TAKEOVER, teardown);
     window.removeEventListener("mousemove", onMouseMove, true);
     document.removeEventListener("mouseout", onMouseOut, true);
     window.removeEventListener("pointerdown", onPointerDown, true);

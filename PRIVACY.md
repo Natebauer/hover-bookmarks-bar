@@ -10,6 +10,9 @@ Hover Bookmarks Bar does not collect, store, transmit, or sell any data.
 - **Matching the page's color:** when the bar is about to appear, the extension takes a snapshot of the
   visible tab and reads the color of its top edge, so the bar matches the page. The snapshot is processed
   in memory, never saved, and never leaves your browser.
+- **Tabs that were already open:** when the extension is installed or updated, it adds the bar to the
+  tabs you already have open so you don't need to reload them. It only runs its own bookmarks-bar code
+  there and reads nothing from those pages.
 - **Site icons:** icons come from the browser's local favicon cache; no network requests are made for them.
 - **No network access:** the extension makes no requests to any server, and contains no analytics,
   tracking, or advertising.
