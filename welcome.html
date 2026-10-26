@@ -45,9 +45,10 @@
       border-radius: 9px; padding: 10px 16px; border: 1px solid var(--border);
       background: var(--card); color: var(--fg);
     }
-    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-    @media (prefers-color-scheme: dark) { .btn.primary { color: #111; } }
     .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn.small { font-size: 14px; padding: 7px 12px; background: var(--accent-soft); border-color: transparent; color: var(--accent); white-space: nowrap; }
+    .tips li.vivaldi { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    @media (max-width: 520px) { .tips li.vivaldi { flex-direction: column; align-items: flex-start; } }
   </style>
 </head>
 <body>
@@ -66,10 +67,12 @@
       <li><b>Works in the tabs you already had open</b><span>No need to reload anything.</span></li>
       <li><b>Turn off your browser's own bookmarks bar</b><span>In most Chromium browsers that's Ctrl+Shift+B, so this bar is the only one on screen.</span></li>
       <li><b>A few pages are off-limits</b><span>Browsers block every extension on the Web Store, the New Tab page and settings pages, so the bar can't appear there.</span></li>
-      <li><b>Using Vivaldi?</b><span>Choose the folder your Vivaldi bookmark bar shows, and the hover bar will show the same one.</span></li>
+      <li class="vivaldi">
+        <div><b>Using Vivaldi?</b><span>Choose the folder your Vivaldi bookmark bar shows, and the hover bar will show the same one.</span></div>
+        <button class="btn small" id="options" type="button">Choose folder…</button>
+      </li>
     </ul>
     <div class="actions">
-      <button class="btn primary" id="options" type="button">Choose a folder</button>
       <a class="btn" href="https://hoverbookmarksbar.com" target="_blank" rel="noopener">Help &amp; support</a>
     </div>
   </main>
