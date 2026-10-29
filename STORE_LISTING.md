@@ -23,7 +23,7 @@ then slides it down over the page. Move away and it tucks itself back up.
 • Middle-click or Ctrl+click several bookmarks in a folder without it closing
 • Bookmark the current page with one click; edit, rename, delete, and create folders by right-clicking
 • Drag to reorder, drop into folders, or drag a link from the page to bookmark it
-• Takes on the color of the page you're on, so your browser's toolbar tint doesn't change
+• Blends in: in Dia it takes the page's color so the toolbar tint holds steady; elsewhere it matches your light or dark theme
 • Choose which bookmark folder it shows (handy in Vivaldi)
 • Works right away in the tabs you already have open, no reload needed
 • Stays out of the way in fullscreen video
@@ -67,9 +67,10 @@ Shows the browser's bookmarks bar as an overlay that appears when the mouse hove
   nothing else. (Adds no new install warning: the extension already has access to all sites.)
 - Host access (`<all_urls>`) — The bar is drawn inside the current web page, so the script must be
   able to run on any site the user visits. It only reads the page's URL and title when the user clicks
-  "bookmark this page". Host access is also what allows `tabs.captureVisibleTab`, used to read the
-  color of the page's top edge so the bar matches it (browsers such as Dia tint their toolbar from
-  those pixels). The snapshot is processed in memory and discarded; nothing is stored or sent.
+  "bookmark this page". Host access is also what allows `tabs.captureVisibleTab`, used in Dia (whose
+  toolbar takes its color from the top of the page) or when the user picks "Match the page" in Options,
+  to read the color of the page's top edge so the bar matches it. The snapshot is processed in memory
+  and discarded; nothing is stored or sent. In other browsers no snapshot is taken.
 
 **Remote code:** No, the extension does not use remote code.
 

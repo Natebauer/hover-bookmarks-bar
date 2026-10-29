@@ -38,9 +38,11 @@ and **Help & support**.
 
 The bar never appears in fullscreen (videos, presentations).
 
-The bar takes on the color of the top edge of the page (read from a snapshot of the visible tab just
-before it appears). Dia tints its address bar from those same pixels, so the toolbar keeps its color
-while the bar is showing.
+**Bar color** (Options): *Auto* by default. In Dia, which tints its address bar from the top of the
+page, the bar takes the color of the page's top edge (read from a snapshot of the visible tab just
+before it appears), so the toolbar keeps its color while the bar is showing. In other browsers it uses
+the browser's default toolbar colors and follows light/dark mode, and no snapshot is taken. You can force
+either behavior with *Match the page you're on* or *Match my browser*.
 
 Page zoom doesn't affect the bar: it's counter-scaled to the tab's zoom level (and rescales live if you
 zoom while it's open), so it stays the same size as the rest of the browser's UI.

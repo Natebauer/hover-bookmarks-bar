@@ -21,6 +21,10 @@
       font: 13px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
     h1 { font-size: 15px; margin: 0 0 4px; }
+    section + section { margin-top: 22px; }
+    .choice { align-items: flex-start; white-space: normal; padding-top: 7px; padding-bottom: 7px; }
+    .choice input { margin-top: 3px; }
+    .choice small { display: block; color: var(--muted); font-size: 12px; margin-top: 1px; }
     p { margin: 0 0 12px; color: var(--muted); }
     .list { border: 1px solid var(--border); border-radius: 8px; padding: 4px; max-height: 380px; overflow-y: auto; }
     label {
@@ -36,9 +40,15 @@
   </style>
 </head>
 <body>
-  <h1>Folder shown in the bar</h1>
-  <p>Most browsers use their bookmarks bar folder. In Vivaldi, pick the folder your Vivaldi bookmark bar shows.</p>
-  <div class="list" id="list" role="radiogroup" aria-label="Bookmark folder"></div>
+  <section>
+    <h1>Bar color</h1>
+    <div class="list" id="colors" role="radiogroup" aria-label="Bar color"></div>
+  </section>
+  <section>
+    <h1>Folder shown in the bar</h1>
+    <p>Most browsers use their bookmarks bar folder. In Vivaldi, pick the folder your Vivaldi bookmark bar shows.</p>
+    <div class="list" id="list" role="radiogroup" aria-label="Bookmark folder"></div>
+  </section>
   <div id="status" role="status"></div>
   <script src="settings.js"></script>
   <script src="options.js"></script>

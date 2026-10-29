@@ -41,6 +41,34 @@ function findNode(nodes, id) {
 // The bar shows the browser's bookmarks bar unless the user picked another
 // folder on the options page (needed for Vivaldi, whose bar folder isn't the
 // one Chromium labels "bookmarks bar").
+// ---- Bar color ------------------------------------------------------------
+// Dia tints its toolbar from the top of the page, so there the bar copies the
+// page's color to keep that tint steady. Other browsers have a fixed toolbar,
+// so there the bar matches the browser's light/dark theme instead.
+// Setting "barColor": "auto" (default) | "page" | "theme".
+
+// Dia reports only the generic "Chromium" brand; Chrome, Edge, Brave, Opera
+// and Vivaldi (which poses as Chrome) all report a brand of their own.
+function looksLikeDia() {
+  const brands = ((navigator.userAgentData && navigator.userAgentData.brands) || []).map((b) => b.brand);
+  const vendor = /Google Chrome|Microsoft Edge|Brave|Opera|Vivaldi|Yandex|Samsung|Whale|Arc/i;
+  return brands.includes("Chromium") && !brands.some((b) => vendor.test(b));
+}
+
+// Which browser's toolbar colors to copy in "theme" mode (measured defaults).
+function toolbarFamily() {
+  const brands = ((navigator.userAgentData && navigator.userAgentData.brands) || []).map((b) => b.brand).join(" ");
+  if (/Microsoft Edge/i.test(brands)) return "edge";
+  if (/Brave/i.test(brands)) return "brave";
+  return "chrome";
+}
+
+async function resolveColorMode() {
+  const setting = await HBBSettings.get("barColor").catch(() => null);
+  if (setting === "page" || setting === "theme") return setting;
+  return looksLikeDia() ? "page" : "theme";
+}
+
 async function getBarTree() {
   const tree = await chrome.bookmarks.getTree();
   let { bar, other } = findRoots(tree);
@@ -54,6 +82,8 @@ async function getBarTree() {
   return {
     bar: bar ? slim(bar) : null,
     other: other && other.children && other.children.length ? slim(other) : null,
+    colorMode: await resolveColorMode(),
+    toolbar: toolbarFamily(),
   };
 }
 

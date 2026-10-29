@@ -1,5 +1,38 @@
-// Options page: choose which bookmark folder the hover bar shows.
+// Options page: the bar's color mode and which bookmark folder it shows.
 const list = document.getElementById("list");
+const colors = document.getElementById("colors");
+
+const COLOR_CHOICES = [
+  ["auto", "Auto (recommended)", "Matches the page in Dia, whose toolbar takes on the page's color. Everywhere else, matches your browser's light or dark theme."],
+  ["page", "Match the page you're on", "The bar takes the color at the top of each page."],
+  ["theme", "Match my browser", "A plain light or dark bar, like the browser's own toolbar."],
+];
+
+async function renderColors() {
+  const current = (await HBBSettings.get("barColor").catch(() => null)) || "auto";
+  colors.textContent = "";
+  for (const [value, title, hint] of COLOR_CHOICES) {
+    const label = document.createElement("label");
+    label.className = "choice";
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "barColor";
+    input.value = value;
+    input.checked = value === current;
+    input.addEventListener("change", async () => {
+      await HBBSettings.set("barColor", value === "auto" ? null : value);
+      chrome.runtime.sendMessage({ type: "settingsChanged" }).catch(() => {});
+      status.textContent = "Saved — open tabs update right away.";
+    });
+    const text = document.createElement("span");
+    text.textContent = title;
+    const small = document.createElement("small");
+    small.textContent = hint;
+    text.appendChild(small);
+    label.append(input, text);
+    colors.appendChild(label);
+  }
+}
 const status = document.getElementById("status");
 const DEFAULT = "";
 
@@ -53,4 +86,5 @@ async function render() {
   if (!list.querySelector("input:checked")) def.querySelector("input").checked = true;
 }
 
+renderColors();
 render();

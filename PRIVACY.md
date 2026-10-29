@@ -7,9 +7,10 @@ Hover Bookmarks Bar does not collect, store, transmit, or sell any data.
 - **Web pages:** the extension runs on web pages only to draw the bookmarks bar and to read the current
   page's address and title when you choose to bookmark it. It does not read, record, or send page
   content.
-- **Matching the page's color:** when the bar is about to appear, the extension takes a snapshot of the
-  visible tab and reads the color of its top edge, so the bar matches the page. The snapshot is processed
-  in memory, never saved, and never leaves your browser.
+- **Matching the page's color:** in Dia (or anywhere you choose "Match the page you're on"), when the bar
+  is about to appear the extension takes a snapshot of the visible tab and reads the color of its top
+  edge, so the bar matches the page. The snapshot is processed in memory, never saved, and never leaves
+  your browser. In other browsers the bar simply follows your light or dark theme and no snapshot is taken.
 - **Tabs that were already open:** when the extension is installed or updated, it adds the bar to the
   tabs you already have open so you don't need to reload them. It only runs its own bookmarks-bar code
   there and reads nothing from those pages.

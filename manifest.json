@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Hover Bookmarks Bar",
   "short_name": "Hover Bookmarks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Shows your bookmarks bar only when you hover at the top of the page.",
   "minimum_chrome_version": "116",
   "permissions": [

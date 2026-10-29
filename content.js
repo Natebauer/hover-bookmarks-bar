@@ -245,7 +245,11 @@
     updateAddButton();
   }
 
+  // The extension's own pages (welcome, etc.) aren't worth bookmarking.
+  const bookmarkable = () => /^(https?|file):$/.test(location.protocol);
+
   function updateAddButton() {
+    ui.add.hidden = !bookmarkable();
     const existing = tree ? findByUrl(location.href) : null;
     ui.add.textContent = "";
     ui.add.appendChild(svg(existing ? ICONS.star : ICONS.plus));
@@ -272,6 +276,7 @@
 
   async function refresh() {
     const chain = menus.map((m) => m.id);
+    const prevMode = tree && tree.colorMode;
     tree = await send("getTree");
     treeDirty = false;
     indexTree();
@@ -279,6 +284,12 @@
     closeAllMenus(true);
     renderBar();
     if (visible) {
+      // The Bar color setting changed while the bar was open: recolor now. (No
+      // snapshot here, it would capture the bar itself; read the page's CSS.)
+      if (tree.colorMode !== prevMode) {
+        if (pageMode()) matchPageColor(null);
+        else useThemeColor();
+      }
       layoutOverflow();
       reopenChain(chain);
     }
@@ -367,6 +378,19 @@
       .catch(() => null);
   }
 
+  // "theme" mode (browsers whose toolbar doesn't change with the page): no
+  // snapshot, just the default palette, which follows light/dark and uses the
+  // default Chrome toolbar colors.
+  function useThemeColor() {
+    const w = ui.wrap;
+    w.dataset.toolbar = (tree && tree.toolbar) || "chrome";
+    w.classList.remove("tone-light", "tone-dark");
+    w.style.removeProperty("--bg");
+    w.style.removeProperty("--menu-bg");
+  }
+
+  const pageMode = () => !!tree && tree.colorMode === "page";
+
   function matchPageColor(sampled) {
     let c = sampled;
     if (!c) {
@@ -424,11 +448,13 @@
       return;
     }
     if (document.fullscreenElement) return;
-    const [sampled, zoom] = await Promise.all([colorPromise, zoomPromise]);
+    if (pageMode() && !colorPromise) sampleColorSoon(); // first reveal: mode only known now
+    const [sampled, zoom] = await Promise.all([pageMode() ? colorPromise : null, zoomPromise]);
     colorPromise = zoomPromise = null;
     if (zoom) applyZoom(zoom);
     if (visible || document.fullscreenElement) return;
-    matchPageColor(sampled);
+    if (pageMode()) matchPageColor(sampled);
+    else useThemeColor();
     updateAddButton();
     visible = true;
     ui.bar.classList.add("shown");
@@ -462,7 +488,7 @@
 
   function startReveal() {
     if (revealTimer) return;
-    sampleColorSoon(); // runs while we wait out the reveal delay
+    if (pageMode()) sampleColorSoon(); // runs while we wait out the reveal delay
     zoomPromise = send("getZoom").catch(() => null);
     revealTimer = setTimeout(reveal, REVEAL_DELAY);
   }
@@ -727,9 +753,9 @@
       add("Edit…", () => editDialog(node));
       add("Delete", () => deleteNode(node));
     } else {
-      add("Bookmark this page", addCurrentPage);
+      if (bookmarkable()) add("Bookmark this page", addCurrentPage);
     }
-    sep();
+    if (el.children.length) sep();
     add("New folder…", () => newFolderDialog(newFolderTarget));
 
     ui.layer.appendChild(el);
@@ -939,8 +965,25 @@
       };
     }
     if (empty) return { mode: "into", el: empty, parentId: empty.dataset.dropInto, index: undefined };
-    if (inBar) return { mode: "end", el: null, parentId: tree.bar.id, index: undefined };
+    if (inBar) return nearestGap(e.clientX);
     return null;
+  }
+
+  // Over the bar but not over a bookmark (the gaps between them, or empty space):
+  // insert at the nearest spot between the visible bookmarks, not at the end.
+  function nearestGap(x) {
+    const items = [...ui.items.children].filter((k) => k.dataset.id && !k.hidden);
+    if (!items.length) return { mode: "end", el: null, parentId: tree.bar.id, index: undefined };
+    for (const k of items) {
+      const r = k.getBoundingClientRect();
+      if (x < r.left + r.width / 2) {
+        const node = nodes.get(k.dataset.id);
+        return { mode: "before", el: k, parentId: node.parentId, index: indexOf(node), horizontal: true };
+      }
+    }
+    const last = items[items.length - 1];
+    const node = nodes.get(last.dataset.id);
+    return { mode: "after", el: last, parentId: node.parentId, index: indexOf(node) + 1, horizontal: true };
   }
 
   function validDrop(target) {
@@ -1206,8 +1249,13 @@
       text-align: left; letter-spacing: normal; text-transform: none;
     }
     /* Palettes. tone-* (picked from the page's own color) beats the system theme. */
-    .wrap { --bg: #f3f3f5; --menu-bg: #ffffff; ${LIGHT} }
-    @media (prefers-color-scheme: dark) { .wrap { --bg: #2a2a2e; --menu-bg: #333338; ${DARK} } }
+    .wrap { --bg: #ffffff; --menu-bg: #ffffff; ${LIGHT} }
+    @media (prefers-color-scheme: dark) { .wrap { --bg: #3c3c3c; --menu-bg: #333336; ${DARK} } }
+    /* Default dark toolbar colors measured in each browser (light is white in all of them). */
+    @media (prefers-color-scheme: dark) {
+      .wrap[data-toolbar="edge"] { --bg: #333333; --menu-bg: #2b2b2b; }
+      .wrap[data-toolbar="brave"] { --bg: #39393b; --menu-bg: #313133; }
+    }
     .wrap.tone-light { ${LIGHT} }
     .wrap.tone-dark { ${DARK} }
     *, *::before, *::after { box-sizing: border-box; }
